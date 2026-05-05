@@ -1,0 +1,30 @@
+@RestController
+@RequestMapping("/apipath")
+public class PeerTubeController {
+
+    @Autowired
+    private PeerTubeService service;
+
+    @PostMapping("/{id}")
+    public String send(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "10") int maxVideos,
+            @RequestParam(defaultValue = "2") int maxComments) {
+
+        Channel channel = service.getChannelData(id, maxVideos, maxComments);
+
+        service.sendToVideoMiner(channel);
+
+        return "Datos enviados a VideoMiner";
+    }
+
+    // 👉 Para probar sin enviar
+    @GetMapping("/{id}")
+    public Channel get(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "10") int maxVideos,
+            @RequestParam(defaultValue = "2") int maxComments) {
+
+        return service.getChannelData(id, maxVideos, maxComments);
+    }
+}
