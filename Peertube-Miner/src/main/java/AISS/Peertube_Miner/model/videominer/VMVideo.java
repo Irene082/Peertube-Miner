@@ -1,0 +1,47 @@
+package AISS.Peertube_Miner.model.videominer;
+
+public class VMVideo {
+
+    private String id;
+    private String name;
+    private String description;
+    private String releaseTime;
+
+    // Constructor vacío
+    public VMVideo() {}
+
+    // Getters y Setters
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getReleaseTime() {
+        return releaseTime;
+    }
+
+    public void setReleaseTime(String releaseTime) {
+        this.releaseTime = releaseTime;
+    }
+
+
+}
