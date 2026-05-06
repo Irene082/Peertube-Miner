@@ -31,5 +31,4 @@ public class VMComment {
     public void setCreatedOn(String createdOn) {
         this.createdOn = createdOn;
     }
-
 }

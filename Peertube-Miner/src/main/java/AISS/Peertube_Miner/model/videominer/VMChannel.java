@@ -1,11 +1,14 @@
 package AISS.Peertube_Miner.model.videominer;
 
+import java.util.List;
+
 public class VMChannel {
 
     private String id;
     private String name;
     private String description;
     private String createdTime;
+    private List<VMVideo> videos;
 
     public VMChannel() {}
 
@@ -41,4 +44,11 @@ public class VMChannel {
         this.createdTime = createdTime;
     }
 
+    public List<VMVideo> getVideos() {
+        return videos;
+    }
+
+    public void setVideos(List<VMVideo> videos) {
+        this.videos = videos;
+    }
 }

@@ -1,11 +1,15 @@
 package AISS.Peertube_Miner.model.videominer;
 
+import java.util.List;
+
 public class VMVideo {
 
     private String id;
     private String name;
     private String description;
     private String releaseTime;
+    private List<VMComment> comments;
+    private List<VMCaption> captions;
 
     public VMVideo() {}
 
@@ -41,5 +45,19 @@ public class VMVideo {
         this.releaseTime = releaseTime;
     }
 
+    public List<VMComment> getComments() {
+        return comments;
+    }
 
+    public void setComments(List<VMComment> comments) {
+        this.comments = comments;
+    }
+
+    public List<VMCaption> getCaptions() {
+        return captions;
+    }
+
+    public void setCaptions(List<VMCaption> captions) {
+        this.captions = captions;
+    }
 }
