@@ -73,7 +73,7 @@ public class GlobalExceptionHandler {
         response.put("path", "/api/peertube");
         return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
     }
-/*
+
     @ExceptionHandler(VideoMinerApiException.class)
     public ResponseEntity<Map<String, Object>> handleVideoMinerApi(VideoMinerApiException ex) {
         Map<String, Object> response = new HashMap<>();
@@ -84,7 +84,7 @@ public class GlobalExceptionHandler {
         response.put("path", "/api/peertube");
         return new ResponseEntity<>(response, HttpStatus.BAD_GATEWAY);
     }
-*/
+
     @ExceptionHandler(AccountNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleAccountNotFound(AccountNotFoundException ex) {
         Map<String, Object> response = new HashMap<>();
@@ -108,20 +108,7 @@ public class GlobalExceptionHandler {
         response.put("path", "/api/peertube");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-/*
-    @ExceptionHandler(InvalidParameterException.class)
-    public ResponseEntity<Map<String, Object>> handleInvalidParameter(InvalidParameterException ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", LocalDateTime.now());
-        response.put("status", 400);
-        response.put("error", "Parámetro inválido");
-        response.put("message", ex.getMessage());
-        response.put("parameter", ex.getParameterName());
-        response.put("invalidValue", ex.getInvalidValue());
-        response.put("path", "/api/peertube");
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-*/
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
         Map<String, Object> response = new HashMap<>();
