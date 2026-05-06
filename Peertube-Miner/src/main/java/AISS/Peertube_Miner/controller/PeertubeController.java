@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import AISS.Peertube_Miner.exception.*;
 import AISS.Peertube_Miner.service.PeertubeService;
 import AISS.Peertube_Miner.model.*;
 import AISS.Peertube_Miner.model.videominer.*;
@@ -37,6 +39,11 @@ public class PeertubeController {
             @RequestParam(defaultValue = "10") int maxVideos) {
 
         VideoResponse videos = peertubeService.getVideos(id, maxVideos);
+
+        if (videos == null || videos.getData() == null || videos.getData().isEmpty()) {
+            throw new AccountNotFoundException(id);
+        }
+
         return ResponseEntity.ok(videos);
     }
 
@@ -49,23 +56,29 @@ public class PeertubeController {
 
         // 1. Obtener datos de PeerTube
         Account account = peertubeService.getAccount(id);
+        if (account == null) {
+            throw new AccountNotFoundException(id);
+        }
+
         VideoResponse videoResponse = peertubeService.getVideos(id, maxVideos);
 
         // 2. Convertir a VMChannel
         VMChannel vmChannel = convertToVMChannel(account, videoResponse, maxComments);
 
         // 3. Enviar a VideoMiner
-        VMChannel createdChannel = restTemplate.postForObject(videoMinerUri, vmChannel, VMChannel.class);
-
-        return ResponseEntity.ok(createdChannel);
+        try {
+            VMChannel createdChannel = restTemplate.postForObject(videoMinerUri, vmChannel, VMChannel.class);
+            return ResponseEntity.ok(createdChannel);
+        } catch (RestClientException e) {
+            throw new VideoMinerApiException("No se pudo enviar el canal a VideoMiner: " + e.getMessage(), e);
+        }
     }
 
-    // ========== Métodos de conversión ==========
+    // ========== Métodos de conversión (igual que antes) ==========
     private VMChannel convertToVMChannel(Account account, VideoResponse videoResponse, int maxComments) {
 
         VMChannel vmChannel = new VMChannel();
         vmChannel.setId(String.valueOf(account.getId()));
-        // Usamos getName() en lugar de getDisplayName()
         vmChannel.setName(account.getName() != null ? account.getName() : "");
         vmChannel.setDescription("");
         vmChannel.setCreatedTime("");
@@ -92,7 +105,6 @@ public class PeertubeController {
         vmVideo.setDescription(video.getDescription() != null ? video.getDescription() : "");
         vmVideo.setReleaseTime(video.getReleaseTime() != null ? video.getReleaseTime() : "");
 
-        // Obtener comentarios del video
         CommentResponse commentResponse = peertubeService.getComments(String.valueOf(video.getId()), maxComments);
         if (commentResponse != null && commentResponse.getData() != null && !commentResponse.getData().isEmpty()) {
             List<VMComment> vmComments = commentResponse.getData().stream()
@@ -101,7 +113,6 @@ public class PeertubeController {
             vmVideo.setComments(vmComments);
         }
 
-        // Obtener captions del video
         CaptionResponse captionResponse = peertubeService.getCaptions(String.valueOf(video.getId()));
         if (captionResponse != null && captionResponse.getData() != null && !captionResponse.getData().isEmpty()) {
             List<VMCaption> vmCaptions = captionResponse.getData().stream()
@@ -117,7 +128,6 @@ public class PeertubeController {
         VMComment vmComment = new VMComment();
         vmComment.setId(String.valueOf(comment.getId()));
         vmComment.setText(comment.getText() != null ? comment.getText() : "");
-        // Usamos getCreatedOn() en lugar de getCreatedAt()
         vmComment.setCreatedOn(comment.getCreatedOn() != null ? comment.getCreatedOn() : "");
         return vmComment;
     }
@@ -125,7 +135,6 @@ public class PeertubeController {
     private VMCaption convertToVMCaption(Caption caption) {
         VMCaption vmCaption = new VMCaption();
         vmCaption.setId(caption.getId() != null ? caption.getId() : UUID.randomUUID().toString());
-        // language es String directamente, no tiene getLabel()
         vmCaption.setLanguage(caption.getLanguage() != null ? caption.getLanguage() : "unknown");
         vmCaption.setLink(caption.getLink() != null ? caption.getLink() : "");
         return vmCaption;
