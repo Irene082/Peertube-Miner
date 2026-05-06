@@ -1,134 +1,56 @@
-
 package AISS.Peertube_Miner.model;
 
-import java.util.List;
-import javax.annotation.processing.Generated;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-    "id",
-    "displayName",
-    "name",
-    "url",
-    "host",
-    "avatars"
-})
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Generated("jsonschema2pojo")
 public class Account {
 
     @JsonProperty("id")
     private Integer id;
-    @JsonProperty("displayName")
-    private String displayName;
+
     @JsonProperty("name")
     private String name;
-    @JsonProperty("url")
-    private String url;
-    @JsonProperty("host")
-    private String host;
-    @JsonProperty("avatars")
-    private List<Avatar> avatars;
 
-    @JsonProperty("id")
+    @JsonProperty("url")
+    private String user_link;
+
+    @JsonProperty("avatars")
+    private String picture_link;
+
+    // Constructor vacío
+    public Account() {}
+
+    // Getters y Setters
     public Integer getId() {
         return id;
     }
 
-    @JsonProperty("id")
     public void setId(Integer id) {
         this.id = id;
     }
 
-    @JsonProperty("displayName")
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    @JsonProperty("displayName")
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
-    }
-
-    @JsonProperty("name")
     public String getName() {
         return name;
     }
 
-    @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
     }
 
-    @JsonProperty("url")
-    public String getUrl() {
-        return url;
+    public String getUser_link() {
+        return user_link;
     }
 
-    @JsonProperty("url")
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUser_link(String user_link) {
+        this.user_link = user_link;
     }
 
-    @JsonProperty("host")
-    public String getHost() {
-        return host;
+    public String getPicture_link() {
+        return picture_link;
     }
 
-    @JsonProperty("host")
-    public void setHost(String host) {
-        this.host = host;
+    public void setPicture_link(String picture_link) {
+        this.picture_link = picture_link;
     }
-
-    @JsonProperty("avatars")
-    public List<Avatar> getAvatars() {
-        return avatars;
-    }
-
-    @JsonProperty("avatars")
-    public void setAvatars(List<Avatar> avatars) {
-        this.avatars = avatars;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(Account.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
-        sb.append("id");
-        sb.append('=');
-        sb.append(((this.id == null)?"<null>":this.id));
-        sb.append(',');
-        sb.append("displayName");
-        sb.append('=');
-        sb.append(((this.displayName == null)?"<null>":this.displayName));
-        sb.append(',');
-        sb.append("name");
-        sb.append('=');
-        sb.append(((this.name == null)?"<null>":this.name));
-        sb.append(',');
-        sb.append("url");
-        sb.append('=');
-        sb.append(((this.url == null)?"<null>":this.url));
-        sb.append(',');
-        sb.append("host");
-        sb.append('=');
-        sb.append(((this.host == null)?"<null>":this.host));
-        sb.append(',');
-        sb.append("avatars");
-        sb.append('=');
-        sb.append(((this.avatars == null)?"<null>":this.avatars));
-        sb.append(',');
-        if (sb.charAt((sb.length()- 1)) == ',') {
-            sb.setCharAt((sb.length()- 1), ']');
-        } else {
-            sb.append(']');
-        }
-        return sb.toString();
-    }
-
 }
