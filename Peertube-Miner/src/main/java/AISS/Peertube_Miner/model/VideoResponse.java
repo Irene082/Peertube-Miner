@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "total",
     "data"
 })
+
 @Generated("jsonschema2pojo")
 public class VideoResponse {
 

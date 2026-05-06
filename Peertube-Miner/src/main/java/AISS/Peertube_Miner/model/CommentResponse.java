@@ -1,17 +1,17 @@
 
 package AISS.Peertube_Miner.model;
 
+import java.util.List;
+import javax.annotation.processing.Generated;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import javax.annotation.processing.Generated;
-import java.util.List;
-
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
     "total",
-    "data"
+    "data",
+    "totalNotDeletedComments"
 })
 @Generated("jsonschema2pojo")
 public class CommentResponse {
@@ -20,6 +20,8 @@ public class CommentResponse {
     private Integer total;
     @JsonProperty("data")
     private List<Comment> data;
+    @JsonProperty("totalNotDeletedComments")
+    private Integer totalNotDeletedComments;
 
     @JsonProperty("total")
     public Integer getTotal() {
@@ -41,6 +43,16 @@ public class CommentResponse {
         this.data = data;
     }
 
+    @JsonProperty("totalNotDeletedComments")
+    public Integer getTotalNotDeletedComments() {
+        return totalNotDeletedComments;
+    }
+
+    @JsonProperty("totalNotDeletedComments")
+    public void setTotalNotDeletedComments(Integer totalNotDeletedComments) {
+        this.totalNotDeletedComments = totalNotDeletedComments;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -52,6 +64,10 @@ public class CommentResponse {
         sb.append("data");
         sb.append('=');
         sb.append(((this.data == null)?"<null>":this.data));
+        sb.append(',');
+        sb.append("totalNotDeletedComments");
+        sb.append('=');
+        sb.append(((this.totalNotDeletedComments == null)?"<null>":this.totalNotDeletedComments));
         sb.append(',');
         if (sb.charAt((sb.length()- 1)) == ',') {
             sb.setCharAt((sb.length()- 1), ']');
