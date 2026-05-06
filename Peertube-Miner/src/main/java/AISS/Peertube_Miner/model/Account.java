@@ -3,6 +3,8 @@ package AISS.Peertube_Miner.model;
 
 import java.util.List;
 import javax.annotation.processing.Generated;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
     "host",
     "avatars"
 })
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Generated("jsonschema2pojo")
 public class Account {
 
@@ -30,7 +33,7 @@ public class Account {
     @JsonProperty("host")
     private String host;
     @JsonProperty("avatars")
-    private List<Object> avatars;
+    private List<Avatar> avatars;
 
     @JsonProperty("id")
     public Integer getId() {
@@ -83,12 +86,12 @@ public class Account {
     }
 
     @JsonProperty("avatars")
-    public List<Object> getAvatars() {
+    public List<Avatar> getAvatars() {
         return avatars;
     }
 
     @JsonProperty("avatars")
-    public void setAvatars(List<Object> avatars) {
+    public void setAvatars(List<Avatar> avatars) {
         this.avatars = avatars;
     }
 

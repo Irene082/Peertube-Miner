@@ -6,10 +6,8 @@ public class VMCaption {
     private String link;
     private String language;
 
-    // Constructor vacío
     public VMCaption() {}
 
-    // Getters y Setters
     public String getId() {
         return id;
     }

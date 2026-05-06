@@ -6,10 +6,8 @@ public class VMComment {
     private String text;
     private String createdOn;
 
-    // Constructor vacío.
     public VMComment() {}
 
-    // Getters y Setters
     public String getId() {
         return id;
     }

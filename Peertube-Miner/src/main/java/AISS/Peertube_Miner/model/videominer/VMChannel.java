@@ -7,10 +7,8 @@ public class VMChannel {
     private String description;
     private String createdTime;
 
-    // Constructor vacío
     public VMChannel() {}
 
-    // Getters y Setters
     public String getId() {
         return id;
     }

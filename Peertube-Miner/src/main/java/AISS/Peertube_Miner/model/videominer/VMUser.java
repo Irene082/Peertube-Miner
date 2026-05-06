@@ -7,10 +7,8 @@ public class VMUser {
     private String user_link;
     private String picture_link;
 
-    // Constructor vacío
     public VMUser() {}
 
-    // Getters y Setters
     public String getId() {
         return id;
     }

@@ -7,10 +7,8 @@ public class VMVideo {
     private String description;
     private String releaseTime;
 
-    // Constructor vacío
     public VMVideo() {}
 
-    // Getters y Setters
     public String getId() {
         return id;
     }
