@@ -2,55 +2,78 @@ package AISS.Peertube_Miner.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Account {
 
-    @JsonProperty("id")
-    private Integer id;
-
+    @JsonProperty("url")
+    private String url;
     @JsonProperty("name")
     private String name;
-
-    @JsonProperty("url")
-    private String user_link;
-
+    @JsonProperty("host")
+    private String host;
     @JsonProperty("avatars")
-    private String picture_link;
+    private List<Object> avatars;
+    @JsonProperty("id")
+    private Integer id;
+    @JsonProperty("hostRedundancyAllowed")
+    private Boolean hostRedundancyAllowed;
+    @JsonProperty("followingCount")
+    private Integer followingCount;
+    @JsonProperty("followersCount")
+    private Integer followersCount;
+    @JsonProperty("createdAt")
+    private String createdAt;
+    @JsonProperty("displayName")
+    private String displayName;
+    @JsonProperty("description")
+    private String description;
+    @JsonProperty("updatedAt")
+    private String updatedAt;
+    @JsonProperty("userId")
+    private Integer userId;
 
-    // Constructor vacío
+    // Constructor vacío (OBLIGATORIO)
     public Account() {}
 
-    // Getters y Setters
-    public Integer getId() {
-        return id;
-    }
+    // Getters y Setters (generados automáticamente. Son MUY IMPORTANTES)
+    public String getUrl() { return url; }
+    public void setUrl(String url) { this.url = url; }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+    public String getHost() { return host; }
+    public void setHost(String host) { this.host = host; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public List<Object> getAvatars() { return avatars; }
+    public void setAvatars(List<Object> avatars) { this.avatars = avatars; }
 
-    public String getUser_link() {
-        return user_link;
-    }
+    public Integer getId() { return id; }
+    public void setId(Integer id) { this.id = id; }
 
-    public void setUser_link(String user_link) {
-        this.user_link = user_link;
-    }
+    public Boolean getHostRedundancyAllowed() { return hostRedundancyAllowed; }
+    public void setHostRedundancyAllowed(Boolean hostRedundancyAllowed) { this.hostRedundancyAllowed = hostRedundancyAllowed; }
 
-    public String getPicture_link() {
-        return picture_link;
-    }
+    public Integer getFollowingCount() { return followingCount; }
+    public void setFollowingCount(Integer followingCount) { this.followingCount = followingCount; }
 
-    public void setPicture_link(String picture_link) {
-        this.picture_link = picture_link;
-    }
+    public Integer getFollowersCount() { return followersCount; }
+    public void setFollowersCount(Integer followersCount) { this.followersCount = followersCount; }
+
+    public String getCreatedAt() { return createdAt; }
+    public void setCreatedAt(String createdAt) { this.createdAt = createdAt; }
+
+    public String getDisplayName() { return displayName; }
+    public void setDisplayName(String displayName) { this.displayName = displayName; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public String getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(String updatedAt) { this.updatedAt = updatedAt; }
+
+    public Integer getUserId() { return userId; }
+    public void setUserId(Integer userId) { this.userId = userId; }
 }

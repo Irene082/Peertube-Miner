@@ -34,17 +34,24 @@ public class PeertubeController {
 
     // ========== GET para pruebas (NO envía a VideoMiner) ==========
     @GetMapping("/{id}")
-    public ResponseEntity<VideoResponse> getChannelVideos(
+    public ResponseEntity<VMChannel> getChannel(
             @PathVariable String id,
-            @RequestParam(defaultValue = "10") int maxVideos) {
+            @RequestParam(defaultValue = "10") int maxVideos,
+            @RequestParam(defaultValue = "2") int maxComments) {
 
-        VideoResponse videos = peertubeService.getVideos(id, maxVideos);
-
-        if (videos == null || videos.getData() == null || videos.getData().isEmpty()) {
+        // 1. Obtener account
+        Account account = peertubeService.getAccount(id);
+        if (account == null) {
             throw new AccountNotFoundException(id);
         }
 
-        return ResponseEntity.ok(videos);
+        // 2. Obtener videos
+        VideoResponse videoResponse = peertubeService.getVideos(id, maxVideos);
+
+        // 3. Convertir a VMChannel (sin enviar a VideoMiner)
+        VMChannel vmChannel = convertToVMChannel(account, videoResponse, maxComments);
+
+        return ResponseEntity.ok(vmChannel);
     }
 
     // ========== POST que envía a VideoMiner ==========
@@ -74,14 +81,14 @@ public class PeertubeController {
         }
     }
 
-    // ========== Métodos de conversión (igual que antes) ==========
+    // ========== Métodos de conversión ==========
     private VMChannel convertToVMChannel(Account account, VideoResponse videoResponse, int maxComments) {
 
         VMChannel vmChannel = new VMChannel();
         vmChannel.setId(String.valueOf(account.getId()));
         vmChannel.setName(account.getName() != null ? account.getName() : "");
-        vmChannel.setDescription("");
-        vmChannel.setCreatedTime("");
+        vmChannel.setDescription(account.getDescription() != null ? account.getDescription() : "");
+        vmChannel.setCreatedTime(account.getCreatedAt() != null ? account.getCreatedAt() : "");  // ← CORREGIDO
 
         if (videoResponse != null && videoResponse.getData() != null) {
             List<VMVideo> vmVideos = new ArrayList<>();
@@ -105,25 +112,30 @@ public class PeertubeController {
         vmVideo.setDescription(video.getDescription() != null ? video.getDescription() : "");
         vmVideo.setReleaseTime(video.getReleaseTime() != null ? video.getReleaseTime() : "");
 
+        // Comentarios
         CommentResponse commentResponse = peertubeService.getComments(String.valueOf(video.getId()), maxComments);
         if (commentResponse != null && commentResponse.getData() != null && !commentResponse.getData().isEmpty()) {
             List<VMComment> vmComments = commentResponse.getData().stream()
                     .map(this::convertToVMComment)
                     .collect(Collectors.toList());
             vmVideo.setComments(vmComments);
+        } else {
+            vmVideo.setComments(new ArrayList<>());  // ← array vacío en lugar de null
         }
 
+        // Captions
         CaptionResponse captionResponse = peertubeService.getCaptions(String.valueOf(video.getId()));
         if (captionResponse != null && captionResponse.getData() != null && !captionResponse.getData().isEmpty()) {
             List<VMCaption> vmCaptions = captionResponse.getData().stream()
                     .map(this::convertToVMCaption)
                     .collect(Collectors.toList());
             vmVideo.setCaptions(vmCaptions);
+        } else {
+            vmVideo.setCaptions(new ArrayList<>());  // ← array vacío en lugar de null
         }
 
         return vmVideo;
     }
-
     private VMComment convertToVMComment(Comment comment) {
         VMComment vmComment = new VMComment();
         vmComment.setId(String.valueOf(comment.getId()));
