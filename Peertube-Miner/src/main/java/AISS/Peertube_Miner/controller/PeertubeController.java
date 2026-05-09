@@ -32,47 +32,60 @@ public class PeertubeController {
         this.restTemplate = restTemplate;
     }
 
-    // ========== GET para pruebas (NO envía a VideoMiner) ==========
-    @GetMapping("/{id}")
+    // ========== GET para pruebas ==========
+    @GetMapping("/{channelName}")
     public ResponseEntity<VMChannel> getChannel(
-            @PathVariable String id,
+            @PathVariable String channelName,
             @RequestParam(defaultValue = "10") int maxVideos,
             @RequestParam(defaultValue = "2") int maxComments) {
 
-        // 1. Obtener account
-        Account account = peertubeService.getAccount(id);
-        if (account == null) {
-            throw new AccountNotFoundException(id);
+        // 1. Obtener canal
+        Channel channel = peertubeService.getChannel(channelName);
+        if (channel == null) {
+            throw new ChannelNotFoundException(channelName);
         }
 
-        // 2. Obtener videos
-        VideoResponse videoResponse = peertubeService.getVideos(id, maxVideos);
+        // 2. Obtener videos del canal
+        VideoResponse videoResponse = peertubeService.getChannelVideos(channelName, maxVideos);
 
-        // 3. Convertir a VMChannel (sin enviar a VideoMiner)
-        VMChannel vmChannel = convertToVMChannel(account, videoResponse, maxComments);
+        // 3. Obtener el ownerAccount (user) del canal
+        Account ownerAccount = null;
+        if (channel.getOwnerAccount() != null && channel.getOwnerAccount().getName() != null) {
+            ownerAccount = peertubeService.getAccount(channel.getOwnerAccount().getName());
+        }
+
+        // 4. Convertir a VMChannel
+        VMChannel vmChannel = convertToVMChannel(channel, videoResponse, ownerAccount, maxComments);
 
         return ResponseEntity.ok(vmChannel);
     }
 
     // ========== POST que envía a VideoMiner ==========
-    @PostMapping("/{id}")
+    @PostMapping("/{channelName}")
     public ResponseEntity<VMChannel> processChannel(
-            @PathVariable String id,
+            @PathVariable String channelName,
             @RequestParam(defaultValue = "10") int maxVideos,
             @RequestParam(defaultValue = "2") int maxComments) {
 
-        // 1. Obtener datos de PeerTube
-        Account account = peertubeService.getAccount(id);
-        if (account == null) {
-            throw new AccountNotFoundException(id);
+        // 1. Obtener canal
+        Channel channel = peertubeService.getChannel(channelName);
+        if (channel == null) {
+            throw new ChannelNotFoundException(channelName);
         }
 
-        VideoResponse videoResponse = peertubeService.getVideos(id, maxVideos);
+        // 2. Obtener videos del canal
+        VideoResponse videoResponse = peertubeService.getChannelVideos(channelName, maxVideos);
 
-        // 2. Convertir a VMChannel
-        VMChannel vmChannel = convertToVMChannel(account, videoResponse, maxComments);
+        // 3. Obtener el ownerAccount (user) del canal
+        Account ownerAccount = null;
+        if (channel.getOwnerAccount() != null && channel.getOwnerAccount().getName() != null) {
+            ownerAccount = peertubeService.getAccount(channel.getOwnerAccount().getName());
+        }
 
-        // 3. Enviar a VideoMiner
+        // 4. Convertir a VMChannel
+        VMChannel vmChannel = convertToVMChannel(channel, videoResponse, ownerAccount, maxComments);
+
+        // 5. Enviar a VideoMiner
         try {
             VMChannel createdChannel = restTemplate.postForObject(videoMinerUri, vmChannel, VMChannel.class);
             return ResponseEntity.ok(createdChannel);
@@ -82,19 +95,19 @@ public class PeertubeController {
     }
 
     // ========== Métodos de conversión ==========
-    private VMChannel convertToVMChannel(Account account, VideoResponse videoResponse, int maxComments) {
+    private VMChannel convertToVMChannel(Channel channel, VideoResponse videoResponse, Account ownerAccount, int maxComments) {
 
         VMChannel vmChannel = new VMChannel();
-        vmChannel.setId(String.valueOf(account.getId()));
-        vmChannel.setName(account.getName() != null ? account.getName() : "");
-        vmChannel.setDescription(account.getDescription() != null ? account.getDescription() : "");
-        vmChannel.setCreatedTime(account.getCreatedAt() != null ? account.getCreatedAt() : "");  // ← CORREGIDO
+        vmChannel.setId(String.valueOf(channel.getId()));
+        vmChannel.setName(channel.getName() != null ? channel.getName() : "");
+        vmChannel.setDescription(channel.getDescription() != null ? channel.getDescription() : "");
+        vmChannel.setCreatedTime(channel.getCreatedTime() != null ? channel.getCreatedTime() : "");
 
         if (videoResponse != null && videoResponse.getData() != null) {
             List<VMVideo> vmVideos = new ArrayList<>();
 
             for (Video video : videoResponse.getData()) {
-                VMVideo vmVideo = convertToVMVideo(video, maxComments);
+                VMVideo vmVideo = convertToVMVideo(video, ownerAccount, maxComments);
                 vmVideos.add(vmVideo);
             }
 
@@ -104,13 +117,33 @@ public class PeertubeController {
         return vmChannel;
     }
 
-    private VMVideo convertToVMVideo(Video video, int maxComments) {
+    private VMVideo convertToVMVideo(Video video, Account ownerAccount, int maxComments) {
 
         VMVideo vmVideo = new VMVideo();
         vmVideo.setId(String.valueOf(video.getId()));
         vmVideo.setName(video.getName() != null ? video.getName() : "");
         vmVideo.setDescription(video.getDescription() != null ? video.getDescription() : "");
         vmVideo.setReleaseTime(video.getReleaseTime() != null ? video.getReleaseTime() : "");
+
+        // Añadir el user (ownerAccount) al video
+        if (ownerAccount != null) {
+            VMUser vmUser = new VMUser();
+            vmUser.setId(String.valueOf(ownerAccount.getId()));
+            vmUser.setName(ownerAccount.getDisplayName() != null ? ownerAccount.getDisplayName() : ownerAccount.getName());
+            vmUser.setUser_link(ownerAccount.getUrl());
+
+            // Extraer picture_link del primer avatar
+            if (ownerAccount.getAvatars() != null && !ownerAccount.getAvatars().isEmpty()) {
+                // Asumiendo que avatars es una lista de objetos con fileUrl
+                // Si tienes una clase Avatar, úsala. Si no, trata con Map
+                Object firstAvatar = ownerAccount.getAvatars().get(0);
+                if (firstAvatar instanceof java.util.Map) {
+                    String pictureUrl = (String) ((java.util.Map) firstAvatar).get("fileUrl");
+                    vmUser.setPicture_link(pictureUrl);
+                }
+            }
+            vmVideo.setUser(vmUser);
+        }
 
         // Comentarios
         CommentResponse commentResponse = peertubeService.getComments(String.valueOf(video.getId()), maxComments);
@@ -120,7 +153,7 @@ public class PeertubeController {
                     .collect(Collectors.toList());
             vmVideo.setComments(vmComments);
         } else {
-            vmVideo.setComments(new ArrayList<>());  // ← array vacío en lugar de null
+            vmVideo.setComments(new ArrayList<>());
         }
 
         // Captions
@@ -131,11 +164,12 @@ public class PeertubeController {
                     .collect(Collectors.toList());
             vmVideo.setCaptions(vmCaptions);
         } else {
-            vmVideo.setCaptions(new ArrayList<>());  // ← array vacío en lugar de null
+            vmVideo.setCaptions(new ArrayList<>());
         }
 
         return vmVideo;
     }
+
     private VMComment convertToVMComment(Comment comment) {
         VMComment vmComment = new VMComment();
         vmComment.setId(String.valueOf(comment.getId()));

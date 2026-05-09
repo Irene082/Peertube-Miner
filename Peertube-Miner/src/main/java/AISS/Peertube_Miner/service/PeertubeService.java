@@ -61,4 +61,26 @@ public class PeertubeService {
             return null;
         }
     }
+
+    // ========== NUEVOS MÉTODOS PARA CHANNEL ==========
+
+    // Obtener un canal por su ID
+    public Channel getChannel(String channelId) {
+        try {
+            String url = baseUri + "/video-channels/" + channelId;
+            return restTemplate.getForObject(url, Channel.class);
+        } catch (RestClientException e) {
+            throw new PeerTubeApiException("Error al obtener el channel '" + channelId + "' desde PeerTube: " + e.getMessage(), e);
+        }
+    }
+
+    // Obtener videos de un canal
+    public VideoResponse getChannelVideos(String channelId, int maxVideos) {
+        try {
+            String url = baseUri + "/video-channels/" + channelId + "/videos?count=" + maxVideos;
+            return restTemplate.getForObject(url, VideoResponse.class);
+        } catch (RestClientException e) {
+            throw new PeerTubeApiException("Error al obtener los videos del channel '" + channelId + "': " + e.getMessage(), e);
+        }
+    }
 }

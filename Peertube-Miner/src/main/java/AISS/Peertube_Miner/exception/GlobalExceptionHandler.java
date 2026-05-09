@@ -119,4 +119,16 @@ public class GlobalExceptionHandler {
         response.put("path", "/api/peertube");
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(ChannelNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleChannelNotFound(ChannelNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", 404);
+        response.put("error", "Channel no encontrado");
+        response.put("message", ex.getMessage());
+        response.put("channelId", ex.getChannelId());
+        response.put("path", "/peertube");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }

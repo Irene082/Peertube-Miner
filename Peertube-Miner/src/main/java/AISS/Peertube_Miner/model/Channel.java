@@ -18,6 +18,9 @@ public class Channel {
     @JsonProperty("createdAt")
     private String createdTime;
 
+    @JsonProperty("ownerAccount")
+    private Account ownerAccount;
+
     // Constructor vacío
     public Channel() {}
 
@@ -52,5 +55,13 @@ public class Channel {
 
     public void setCreatedTime(String createdTime) {
         this.createdTime = createdTime;
+    }
+
+    public Account getOwnerAccount() {
+        return ownerAccount;
+    }
+
+    public void setOwnerAccount(Account ownerAccount) {
+        this.ownerAccount = ownerAccount;
     }
 }
