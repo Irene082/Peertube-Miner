@@ -23,7 +23,6 @@ public class PeertubeService {
         this.restTemplate = restTemplate;
     }
 
-    // Obtener account (usuario) por nombre
     public Account getAccount(String accountName) {
         try {
             String url = baseUri + "/accounts/" + accountName;
@@ -33,7 +32,6 @@ public class PeertubeService {
         }
     }
 
-    // Obtener videos de un account
     public VideoResponse getVideos(String accountName, int maxVideos) {
         try {
             String url = baseUri + "/accounts/" + accountName + "/videos?count=" + maxVideos;
@@ -43,7 +41,6 @@ public class PeertubeService {
         }
     }
 
-    // Obtener comentarios de un video
     public CommentResponse getComments(String videoId, int maxComments) {
         try {
             String url = baseUri + "/videos/" + videoId + "/comment-threads?count=" + maxComments;
@@ -53,39 +50,31 @@ public class PeertubeService {
         }
     }
 
-    // Obtener captions de un video
     public CaptionResponse getCaptions(String videoId) {
         try {
             String url = baseUri + "/videos/" + videoId + "/captions";
             return restTemplate.getForObject(url, CaptionResponse.class);
         } catch (RestClientException e) {
-            // Los subtítulos no son críticos, devolvemos null en lugar de lanzar excepción
             return null;
         }
     }
 
-    // ========== NUEVOS MÉTODOS PARA CHANNEL ==========
-
-    // Obtener un canal por su ID
     public Channel getChannel(String channelId) {
         try {
             String url = baseUri + "/video-channels/" + channelId;
             return restTemplate.getForObject(url, Channel.class);
         } catch (HttpClientErrorException.NotFound e) {
-            // Captura el 404 y lanza una excepción específica para que el handler devuelva 404
             throw new ChannelNotFoundException(channelId);
         } catch (RestClientException e) {
             throw new PeerTubeApiException("Error al obtener el channel '" + channelId + "' desde PeerTube: " + e.getMessage(), e);
         }
     }
 
-    // Obtener videos de un canal
     public VideoResponse getChannelVideos(String channelId, int maxVideos) {
         try {
             String url = baseUri + "/video-channels/" + channelId + "/videos?count=" + maxVideos;
             return restTemplate.getForObject(url, VideoResponse.class);
         } catch (HttpClientErrorException.NotFound e) {
-            // Si el canal no existe pero igual intentas sacar videos, también lanzas 404
             throw new ChannelNotFoundException(channelId);
         } catch (RestClientException e) {
             throw new PeerTubeApiException("Error al obtener los videos del channel '" + channelId + "': " + e.getMessage(), e);

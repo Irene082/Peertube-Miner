@@ -18,10 +18,8 @@ public class Video {
     @JsonProperty("publishedAt")
     private String releaseTime;
 
-    // Constructor vacío
     public Video() {}
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

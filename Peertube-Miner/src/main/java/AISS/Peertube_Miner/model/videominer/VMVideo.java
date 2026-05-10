@@ -12,10 +12,8 @@ public class VMVideo {
     private List<VMCaption> captions;
     private VMUser user;  // ← NUEVO CAMPO
 
-    // Constructor vacío
     public VMVideo() {}
 
-    // Getters y Setters existentes...
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
 
@@ -34,7 +32,6 @@ public class VMVideo {
     public List<VMCaption> getCaptions() { return captions; }
     public void setCaptions(List<VMCaption> captions) { this.captions = captions; }
 
-    // NUEVO getter y setter
     public VMUser getUser() { return user; }
     public void setUser(VMUser user) { this.user = user; }
 }

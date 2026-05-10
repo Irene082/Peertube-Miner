@@ -15,10 +15,8 @@ public class Comment {
     @JsonProperty("createdAt")
     private String createdOn;
 
-    // Constructor vacío
     public Comment() {}
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

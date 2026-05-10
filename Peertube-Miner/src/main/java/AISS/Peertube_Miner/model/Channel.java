@@ -21,10 +21,8 @@ public class Channel {
     @JsonProperty("ownerAccount")
     private Account ownerAccount;
 
-    // Constructor vacío
     public Channel() {}
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

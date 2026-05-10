@@ -34,10 +34,8 @@ public class Account {
     @JsonProperty("userId")
     private Integer userId;
 
-    // Constructor vacío (OBLIGATORIO)
     public Account() {}
 
-    // Getters y Setters (generados automáticamente. Son MUY IMPORTANTES)
     public String getUrl() { return url; }
     public void setUrl(String url) { this.url = url; }
 

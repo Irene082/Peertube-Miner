@@ -48,7 +48,7 @@ public class PeertubeController {
         // 2. Obtener videos del canal
         VideoResponse videoResponse = peertubeService.getChannelVideos(channelName, maxVideos);
 
-        // 3. Obtener el ownerAccount (user) del canal
+        // 3. Obtener el ownerAccount del canal
         Account ownerAccount = null;
         if (channel.getOwnerAccount() != null && channel.getOwnerAccount().getName() != null) {
             ownerAccount = peertubeService.getAccount(channel.getOwnerAccount().getName());
@@ -125,7 +125,7 @@ public class PeertubeController {
         vmVideo.setDescription(video.getDescription() != null ? video.getDescription() : "");
         vmVideo.setReleaseTime(video.getReleaseTime() != null ? video.getReleaseTime() : "");
 
-        // Añadir el user (ownerAccount) al video
+        // Añadir el ownerAccount al video
         if (ownerAccount != null) {
             VMUser vmUser = new VMUser();
             vmUser.setId(String.valueOf(ownerAccount.getId()));
@@ -134,8 +134,6 @@ public class PeertubeController {
 
             // Extraer picture_link del primer avatar
             if (ownerAccount.getAvatars() != null && !ownerAccount.getAvatars().isEmpty()) {
-                // Asumiendo que avatars es una lista de objetos con fileUrl
-                // Si tienes una clase Avatar, úsala. Si no, trata con Map
                 Object firstAvatar = ownerAccount.getAvatars().get(0);
                 if (firstAvatar instanceof java.util.Map) {
                     String pictureUrl = (String) ((java.util.Map) firstAvatar).get("fileUrl");
@@ -186,4 +184,3 @@ public class PeertubeController {
         return vmCaption;
     }
 }
-//Pruebas pendientes

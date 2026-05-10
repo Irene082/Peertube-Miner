@@ -15,10 +15,8 @@ public class Caption {
     @JsonProperty("language")
     private String language;
 
-    // Constructor vacío
     public Caption() {}
 
-    // Getters y Setters
     public String getId() {
         return id;
     }
