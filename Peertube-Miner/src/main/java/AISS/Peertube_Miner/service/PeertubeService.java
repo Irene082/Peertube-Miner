@@ -1,8 +1,10 @@
 package AISS.Peertube_Miner.service;
 
+import AISS.Peertube_Miner.exception.ChannelNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import AISS.Peertube_Miner.exception.PeerTubeApiException;
@@ -69,6 +71,9 @@ public class PeertubeService {
         try {
             String url = baseUri + "/video-channels/" + channelId;
             return restTemplate.getForObject(url, Channel.class);
+        } catch (HttpClientErrorException.NotFound e) {
+            // Captura el 404 y lanza una excepción específica para que el handler devuelva 404
+            throw new ChannelNotFoundException(channelId);
         } catch (RestClientException e) {
             throw new PeerTubeApiException("Error al obtener el channel '" + channelId + "' desde PeerTube: " + e.getMessage(), e);
         }
@@ -79,6 +84,9 @@ public class PeertubeService {
         try {
             String url = baseUri + "/video-channels/" + channelId + "/videos?count=" + maxVideos;
             return restTemplate.getForObject(url, VideoResponse.class);
+        } catch (HttpClientErrorException.NotFound e) {
+            // Si el canal no existe pero igual intentas sacar videos, también lanzas 404
+            throw new ChannelNotFoundException(channelId);
         } catch (RestClientException e) {
             throw new PeerTubeApiException("Error al obtener los videos del channel '" + channelId + "': " + e.getMessage(), e);
         }
